@@ -15,4 +15,5 @@ strike.price <- sapply(strike.price, function(x) x[3])
 K <- as.numeric(strike.price)
 K -> option.price[, "Strike"]
 
-#
+# Calculate option price.
+date <- c(9249:9952) # Maturity: Jan 19, 2019
