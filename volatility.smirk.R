@@ -41,12 +41,22 @@ names(put) <- c("Strike", "Put")
 # Calculate mplied volatility
 BS.equation.Call <- function(sigma = sigma, 
                              K     = k,
-                             C     = c,
+                             Call  = call,
                              T     = T,
                              r     = r,
                              st    = st) {
   d1 <- (log(st / k) + (r + 0.5 * sigma^2) * T)/ (sigma * sqrt(T))
   d2 <- d1 - sigma * sqrt(T)
-  BS.equation.Call <- st * pnorm(d1) - k * exp(-r * T) * pnorm(d2) - c 
+  BS.equation.Call <- st * pnorm(d1) - k * exp(-r * T) * pnorm(d2) - call
+}
+BS.equation.Put  <- function(sigma = sigma, 
+                             K     = k,
+                             Put   = put,
+                             T     = T,
+                             r     = r,
+                             st    = st) {
+  d1 <- (log(st / k) + (r + 0.5 * sigma^2) * T)/ (sigma * sqrt(T))
+  d2 <- d1 - sigma * sqrt(T)
+  BS.equation.Put <- k * exp(-r * T) * pnorm(-d2) - st * pnorm(-d1) - put 
 }
 
