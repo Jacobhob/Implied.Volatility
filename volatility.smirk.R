@@ -1,8 +1,8 @@
 library("quantmod")
-library("stringr")
 library("data.table")
+library("stringr")
 
-#getSymbols("AAPL", src = "yahoo")
+getSymbols("AAPL", src = "yahoo")
 #write.csv(AAPL, file = "stock_price_Jan29.csv")
 
 # Read data from csv files.
@@ -18,18 +18,35 @@ strike.price -> option.price[, "Strike"]
 rm(strike.price)
 
 # Initialize parameters. Calculate option prices.
-label <- c(9249:9952) # Maturity: Jan 19, 2019
-st    <- stock.price[nrow(stock.price), "AAPL.Adjusted"]
-K     <- data.table("Strike" = option.price[label, "Strike"])
-
-call  <- 0.5 * option.price[label, c(4, 16)] + 0.5 * option.price[label, c(5, 16)]
+label    <- c(9249:9952) # Maturity: Jan 19, 2019
+maturity <- as.Date("2019-01-19")
+today    <- as.Date("2018-01-29")
+st       <- stock.price[nrow(stock.price) -6, "AAPL.Adjusted"]
+K        <- data.table("Strike" = option.price[label, "Strike"])
+r        <- 0.0180
+T        <- 1
+# Call
+call <- 0.5 * option.price[label, c(4, 16)] + 0.5 * option.price[label, c(5, 16)]
 names(call) <- c("Call", "Strike")
-call  <- data.table(call)
-call  <- call[, mean(Call), by = "Strike"]
+call <- data.table(call)
+call <- call[, mean(Call), by = "Strike"]
 names(call) <- c("Strike", "Call")
-
-put   <- 0.5 * option.price[label, c(11, 16)] + 0.5 * option.price[label, c(12, 16)]
+# Put
+put  <- 0.5 * option.price[label, c(11, 16)] + 0.5 * option.price[label, c(12, 16)]
 names(put) <- c("Put", "Strike")
-put   <- data.table(put) 
-put   <- put[, mean(Put), by = "Strike"]
+put  <- data.table(put) 
+put  <- put[, mean(Put), by = "Strike"]
 names(put) <- c("Strike", "Put")
+
+# Calculate mplied volatility
+BS.equation.Call <- function(sigma = sigma, 
+                             K     = k,
+                             C     = c,
+                             T     = T,
+                             r     = r,
+                             st    = st) {
+  d1 <- (log(st / k) + (r + 0.5 * sigma^2) * T)/ (sigma * sqrt(T))
+  d2 <- d1 - sigma * sqrt(T)
+  BS.equation.Call <- st * pnorm(d1) - k * exp(-r * T) * pnorm(d2) - c 
+}
+
