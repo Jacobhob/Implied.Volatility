@@ -54,8 +54,8 @@ BS.equation.Put  <- function(sigma,
   BS.equation.Put <- K * exp(-r * T) * pnorm(-d2) - st * pnorm(-d1) - Put 
 }
 
+implied.volatility <- data.table()
 for (i in c(1:10)){#nrow(call)) {
-  implied.volatility <- data.table()
   implied.volatility[1, i] <- 
     optimise(BS.equation.Call, c(0, 1), K = as.numeric(call[i, "Strike"]), Call = as.numeric(call[i, "Call"]))
 }
